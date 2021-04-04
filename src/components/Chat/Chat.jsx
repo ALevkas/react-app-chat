@@ -1,5 +1,5 @@
 import { Button, Container, Grid, TextField, Avatar } from '@material-ui/core';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { Context } from '../../index';
@@ -12,6 +12,8 @@ export const Chat = () => {
     const [messages, loading] = useCollectionData(
         firestore.collection('messages').orderBy('createdAt')
     );
+
+    const refMessages = useRef(null);
 
     const [value, setValue] = useState('');
 
@@ -27,6 +29,12 @@ export const Chat = () => {
         setValue('');
     };
 
+    useEffect(() => {
+        if (refMessages.current) {
+            refMessages.current.scrollTop = refMessages.current.scrollHeight;
+        }
+    }, [messages]);
+
     if (loading) {
         return <Loader />;
     }
@@ -39,6 +47,7 @@ export const Chat = () => {
                 justify={'center'}
             >
                 <div
+                    ref={refMessages}
                     style={{
                         width: '80%',
                         height: '70vh',
@@ -46,6 +55,8 @@ export const Chat = () => {
                         border: '1px solid gray',
                         overflowY: 'auto',
                         borderRadius: '6px',
+                        scrollTop: '999',
+                        padding: '25px',
                     }}
                 >
                     {messages.map((message) => (
@@ -53,7 +64,9 @@ export const Chat = () => {
                             style={{
                                 margin: 10,
                                 marginLeft:
-                                    user.uid === message.uid ? 'auto' : '10px',
+                                    user.uid === message.uid
+                                        ? 'calc(80% - 100px)'
+                                        : '10px',
                                 width: 'fit-content',
                                 padding: 5,
                             }}
@@ -64,8 +77,6 @@ export const Chat = () => {
                                         display: 'flex',
                                         direction: 'row',
                                         gap: 10,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
                                     }}
                                 >
                                     <Avatar src={message.photoURL} />
@@ -107,7 +118,7 @@ export const Chat = () => {
                     <Button
                         onClick={sendMessage}
                         variant={'outlined'}
-                        style={{ background: '#3F51B5', marginTop: '10px' }}
+                        style={{ background: '#3F51B5', marginTop: 10 }}
                     >
                         Отправить
                     </Button>
