@@ -65,7 +65,7 @@ export const Chat = () => {
                                 margin: 10,
                                 marginLeft:
                                     user.uid === message.uid
-                                        ? 'calc(80% - 100px)'
+                                        ? 'calc(80% - 60px)'
                                         : '10px',
                                 width: 'fit-content',
                                 padding: 5,
